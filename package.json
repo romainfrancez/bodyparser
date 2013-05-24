@@ -1,0 +1,6 @@
+{
+  "name" : "bodyparser",
+  "description": "An HTTP(S) request body parser for Node.js",
+  "author": "Romain Francez <me@romainf.fr>",
+  "main" : "./lib"
+}

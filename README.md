@@ -1,4 +1,4 @@
 bodyparser
 ==========
 
-A body parser for Node.js
+An HTTP(S) request body parser for Node.js
