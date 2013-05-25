@@ -13,7 +13,7 @@ git clone git://github.com/romainfrancez/bodyparser.git bodyparser
 Example
 -------
 
-```
+```javascript
 var
   BodyParser = require('..').BodyParser,
   http = require('http'),
