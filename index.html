@@ -28,9 +28,99 @@
         </ul>
       </header>
       <section>
-        <h1>bodyparser</h1>
+        <h1>BodyParser <a href="https://travis-ci.org/romainfrancez/bodyparser"><img src="https://travis-ci.org/romainfrancez/bodyparser.png?branch=master" alt="Build Status"></a>
+</h1>
 
 <p>An HTTP(S) request body parser for node.js</p>
+
+<h2>Installation</h2>
+
+<pre><code>git clone git://github.com/romainfrancez/bodyparser.git bodyparser
+</code></pre>
+
+<h2>Example</h2>
+
+<div class="highlight"><pre><span class="kd">var</span>
+  <span class="nx">BodyParser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'..'</span><span class="p">).</span><span class="nx">BodyParser</span><span class="p">,</span>
+  <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">),</span>
+  <span class="nx">util</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'util'</span><span class="p">);</span>
+
+<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span> <span class="o">===</span> <span class="s1">'/upload'</span> <span class="o">&amp;&amp;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">method</span> <span class="o">===</span> <span class="s1">'POST'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span>
+      <span class="nx">bp</span><span class="p">;</span>
+
+    <span class="c1">// Handle the data automatically according to its type</span>
+    <span class="nx">bp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BodyParser</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">'Content-Type'</span><span class="o">:</span> <span class="s1">'text/html'</span><span class="p">});</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;h1&gt;Submitted data&lt;/h1&gt;\n'</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">data</span> <span class="k">instanceof</span> <span class="nx">Buffer</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">inspect</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">toString</span><span class="p">())</span> <span class="o">+</span> <span class="s1">'&lt;br/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">inspect</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'&lt;br/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;a href="/"&gt;Back&lt;/a&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="p">});</span>
+    <span class="nx">bp</span><span class="p">.</span><span class="nx">parse</span><span class="p">();</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+
+  <span class="c1">// For convinience only, a couple of forms</span>
+  <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">'content-type'</span><span class="o">:</span> <span class="s1">'text/html'</span><span class="p">});</span>
+
+  <span class="k">switch</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="s1">'/urlencoded'</span><span class="o">:</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;h1&gt;URLEncoded&lt;/h1&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;form action="/upload" enctype="application/x-www-form-urlencoded" method="POST"&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\tHello: &lt;input type="text" name="hello"/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\tWorld: &lt;input type="text" name="world"/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\t&lt;input type="submit"/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;/form&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;a href="/"&gt;Back&lt;/a&gt;\n'</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>
+
+    <span class="k">case</span> <span class="s1">'/json'</span><span class="o">:</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;h1&gt;JSON&lt;/h1&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;form action="/upload" enctype="application/json" method="POST"&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\tHello: &lt;input type="text" name="hello"/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\tWorld: &lt;input type="text" name="world"/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\t&lt;input type="submit"/&gt;'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;/form&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;a href="/"&gt;Back&lt;/a&gt;\n'</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>
+
+    <span class="k">case</span> <span class="s1">'/raw'</span><span class="o">:</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;h1&gt;Raw&lt;/h1&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;form action="/upload" enctype="text/plain" method="POST"&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\tHello: &lt;input type="text" name="hello"/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\tWorld: &lt;input type="text" name="world"/&gt;&lt;br/&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\t&lt;input type="submit"/&gt;'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;/form&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;a href="/"&gt;Back&lt;/a&gt;\n'</span><span class="p">);</span>
+      <span class="k">break</span><span class="p">;</span>
+
+    <span class="k">default</span><span class="o">:</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;h1&gt;Options&lt;/h1&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;ul&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\t&lt;li&gt;&lt;a href="/urlencoded"&gt;URLEncoded&lt;/a&gt;&lt;/li&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\t&lt;li&gt;&lt;a href="/json"&gt;JSON&lt;/a&gt;&lt;/li&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'\t&lt;li&gt;&lt;a href="/raw"&gt;Raw&lt;/a&gt;&lt;/li&gt;\n'</span><span class="p">);</span>
+      <span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'&lt;/ul&gt;\n'</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
+</pre></div>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Finish MultiPartParser</li>
+<li>Finish test cases</li>
+<li>Create benchmark</li>
+</ul>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/romainfrancez">romainfrancez</a></p>
