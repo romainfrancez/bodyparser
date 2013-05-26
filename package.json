@@ -8,7 +8,7 @@
     "vows": "0.7.x"
   },
   "scripts": {
-    "test": "vows test/* --spec"
+    "test": "vows test/*-test.js --spec"
   },
   "engines": {
     "node": "0.10.x",

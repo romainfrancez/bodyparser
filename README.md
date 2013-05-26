@@ -15,7 +15,7 @@ Example
 
 ```javascript
 var
-  BodyParser = require('..').BodyParser,
+  BodyParser = require('bodyparser').BodyParser,
   http = require('http'),
   util = require('util');
 
@@ -41,7 +41,7 @@ http.createServer(function(request, response) {
   }
   
   
-  // For convinience only, a couple of forms
+  // For convenience only, a couple of forms
   response.writeHead(200, {'content-type': 'text/html'});
 
   switch (request.url) {

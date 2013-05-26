@@ -10,58 +10,50 @@
 
     RawBody = require('./../lib/RawBody.js').RawBody,
 
-    options,
     server;
-
-  options = {
-    hostname: 'localhost',
-    port: '8000',
-    path: '/',
-    method: 'POST'
-  };
 
   server = http.createServer(function (request, response) {
     var
       rb;
 
     rb = new RawBody(request, function (err, data) {
-      response.writeHead(200, {'Content-Type': 'text/plain'});
-      response.end(data.toString());
+      response.write(data);
+      response.end();
     });
     rb.parse();
-  }).listen(8000);
+  }).listen(8001);
 
   exports.rawbody = vows.describe('Raw Body').addBatch({
-    'Normal': {
+    'Normal behavior': {
       topic: function () {
         var
           i,
           request,
           self = this;
 
-        request = http.request(options, function (response) {
+        request = http.request({port: 8001, path: '/normal', method: 'POST'}, function (response) {
           var
             rb;
 
           rb = new RawBody(response, function (err, data) {
-            self.callback(null, data);
+            self.callback(err, data);
           });
           rb.parse();
         });
-
-        for (i = 0; i < 10; i += 1) {
-          request.write('data\n');
-        }
+        request.on('error', function (err) {
+          self.callback(err);
+        });
+        request.write('data1');
+        request.write('data2');
         request.end();
       },
-      'data': function (err, data) {
+      'data1data2': function (err, data) {
         var
           i,
-          s = '';
-        for (i = 0; i < 10; i += 1) {
-          s += 'data\n';
-        }
-        assert.equal(s, data);
+          s = 'data1data2';
+
+        assert.equal(err, null);
+        assert.equal(data.toString(), s);
       }
     }
   });
